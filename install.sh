@@ -161,6 +161,7 @@ install the correct version for you!
 
   #Only for testing!
   git checkout staging-26-2017 
+  go get
 	go build
 	go install
 
