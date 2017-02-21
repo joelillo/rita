@@ -158,6 +158,9 @@ install the correct version for you!
 	go get github.com/ocmdev/rita
 	printf "[+] Installing RITA...\n\n"
 	cd $GOPATH/src/github.com/ocmdev/rita
+
+  #Only for testing!
+  git checkout staging-26-2017 
 	go build
 	go install
 
