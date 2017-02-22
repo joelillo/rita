@@ -51,7 +51,7 @@ type (
 )
 
 func BuildBeaconCollection(res *database.Resources) {
-	collection_name := res.System.TBDConfig.TBDTable
+	collection_name := res.System.BeaconConfig.BeaconTable
 	collection_keys := []string{"uconn_id", "ts_score"}
 	error_check := res.DB.CreateCollection(collection_name, collection_keys)
 	if error_check != "" {
@@ -64,7 +64,7 @@ func BuildBeaconCollection(res *database.Resources) {
 func GetBeaconResultsView(res *database.Resources, cutoffScore float64) []dataBeacon.BeaconAnalysisView {
 	pipeline := getViewPipeline(res, cutoffScore)
 	var results []dataBeacon.BeaconAnalysisView
-	res.DB.AggregateCollection(res.System.TBDConfig.TBDTable, pipeline, &results)
+	res.DB.AggregateCollection(res.System.BeaconConfig.BeaconTable, pipeline, &results)
 	return results
 }
 
@@ -74,7 +74,7 @@ func newBeacon(res *database.Resources) *beacon {
 	// If the threshold is incorrectly specified, fix it up.
 	// We require at least four delta times to analyze
 	// (Q1, Q2, Q3, Q4). So we need at least 5 connections
-	thresh := res.System.TBDConfig.DefaultConnectionThresh
+	thresh := res.System.BeaconConfig.DefaultConnectionThresh
 	if thresh < 5 {
 		thresh = 5
 	}
@@ -217,7 +217,7 @@ func (t *beacon) analyze() {
 
 		//If removing duplicates lowered the conn count under the threshold,
 		//remove this data from the analysis
-		if len(data.ts) < t.resources.System.TBDConfig.DefaultConnectionThresh {
+		if len(data.ts) < t.resources.System.BeaconConfig.DefaultConnectionThresh {
 			continue
 		}
 
@@ -311,7 +311,7 @@ func (t *beacon) write() {
 	defer session.Close()
 
 	for data := range t.writeChannel {
-		session.DB(t.db).C(t.resources.System.TBDConfig.TBDTable).Insert(data)
+		session.DB(t.db).C(t.resources.System.BeaconConfig.BeaconTable).Insert(data)
 	}
 	t.writeWg.Done()
 }

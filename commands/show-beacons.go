@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"text/template"
 
-	"github.com/ocmdev/rita/analysis/TBD"
+	"github.com/ocmdev/rita/analysis/beacon"
 	"github.com/ocmdev/rita/database"
-	tbdData "github.com/ocmdev/rita/datatypes/TBD"
+	beaconData "github.com/ocmdev/rita/datatypes/beacon"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
 )
@@ -42,7 +42,7 @@ func showBeacons(c *cli.Context) error {
 	res := database.InitResources("")
 	res.DB.SelectDB(c.String("database"))
 
-	data := TBD.GetTBDResultsView(res, cutoffScore)
+	data := beacon.GetBeaconResultsView(res, cutoffScore)
 
 	if humanreadable {
 		return showBeaconReport(data)
@@ -51,7 +51,7 @@ func showBeacons(c *cli.Context) error {
 	return showBeaconCsv(data)
 }
 
-func showBeaconReport(data []tbdData.TBDAnalysisView) error {
+func showBeaconReport(data []beaconData.BeaconAnalysisView) error {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Score", "Source IP", "Destination IP",
 		"Connections", "Avg. Bytes", "Intvl Range", "Top Intvl",
@@ -73,12 +73,12 @@ func showBeaconReport(data []tbdData.TBDAnalysisView) error {
 	return nil
 }
 
-func showBeaconCsv(data []tbdData.TBDAnalysisView) error {
+func showBeaconCsv(data []beaconData.BeaconAnalysisView) error {
 	tmpl := "{{.TS_score}},{{.Src}},{{.Dst}},{{.Connections}},{{.AvgBytes}},"
 	tmpl += "{{.TS_iRange}},{{.TS_iMode}},{{.TS_iModeCount}},"
 	tmpl += "{{.TS_iSkew}},{{.TS_iDispersion}},{{.TS_duration}}\n"
 
-	out, err := template.New("tbd").Parse(tmpl)
+	out, err := template.New("beacon").Parse(tmpl)
 	if err != nil {
 		return err
 	}
